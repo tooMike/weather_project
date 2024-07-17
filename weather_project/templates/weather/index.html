@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather App</title>
+</head>
+<body>
+    <h1>Узнай погоду в своем городе</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Узнать погоду</button>
+    </form>
+
+    {% if weather_data %}
+        <h2>Погода в: {{ weather_data.city_name }}</h2>
+        <p>Погода: {{ weather_data.current_weather.description }}</p>
+        <p>Температура: {{ weather_data.current_weather.temperature }}°C</p>
+        <p>Скорость ветра: {{ weather_data.current_weather.windspeed }} км/ч</p>
+        <p>latitude: {{ weather_data.current_weather.latitude }} </p>
+        <p>longitude: {{ weather_data.current_weather.longitude }} </p>
+    {% endif %}
+
+<!-- Добавьте это в ваш шаблон weather/templates/weather/index.html -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+<script>
+    $(function() {
+        $("#id_city_name").autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: "{% url 'city_autocomplete' %}",
+                    dataType: "json",
+                    data: {
+                        term: request.term
+                    },
+                    success: function(data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 2
+        });
+    });
+</script>
+
+</body>
+</html>
+
+
