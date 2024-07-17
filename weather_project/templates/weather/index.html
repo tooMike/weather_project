@@ -1,52 +1,89 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Weather App</title>
+    <!-- Подключение Bootstrap -->
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    <!-- Подключение jQuery и jQuery UI -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 </head>
 <body>
-    <h1>Узнай погоду в своем городе</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form }}
-        <button type="submit">Узнать погоду</button>
-    </form>
+    <div class="container mt-5">
+        <h1 class="mb-4">Узнай погоду в своем городе</h1>
+        <form method="post" class="mb-4">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button type="submit" class="btn btn-primary">Узнать погоду</button>
+        </form>
 
-    {% if weather_data %}
-        <h2>Погода в: {{ weather_data.city_name }}</h2>
-        <p>Погода: {{ weather_data.current_weather.description }}</p>
-        <p>Температура: {{ weather_data.current_weather.temperature }}°C</p>
-        <p>Скорость ветра: {{ weather_data.current_weather.windspeed }} км/ч</p>
-        <p>latitude: {{ weather_data.current_weather.latitude }} </p>
-        <p>longitude: {{ weather_data.current_weather.longitude }} </p>
-    {% endif %}
+        {% if messages %}
+            <div class="alert alert-warning">
+                <ul>
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
 
-<!-- Добавьте это в ваш шаблон weather/templates/weather/index.html -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        {% if weather_data %}
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Погода в: {{ weather_data.city_name }}</h2>
+                    <p class="card-text">Погода: {{ weather_data.current_weather.description }}</p>
+                    <p class="card-text">Температура: {{ weather_data.current_weather.temperature }}°C</p>
+                    <p class="card-text">Скорость ветра: {{ weather_data.current_weather.windspeed }} км/ч</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
 
-<script>
-    $(function() {
-        $("#id_city_name").autocomplete({
-            source: function(request, response) {
-                $.ajax({
-                    url: "{% url 'city_autocomplete' %}",
-                    dataType: "json",
-                    data: {
-                        term: request.term
-                    },
-                    success: function(data) {
-                        response(data);
-                    }
-                });
-            },
-            minLength: 2
+    <!-- Подключение Bootstrap JS и Popper.js -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(function() {
+            var cityInput = $("#id_city_name");
+
+            // Очищаем скрытые поля при изменении значения в поле города
+            cityInput.on('input', function() {
+                $("#id_latitude").val('');
+                $("#id_longitude").val('');
+            });
+
+            cityInput.autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: "{% url 'city_autocomplete' %}",
+                        dataType: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function(data) {
+                            response($.map(data, function(item) {
+                                return {
+                                    label: item.city_name + ', ' + item.country,
+                                    value: item.city_name,
+                                    latitude: item.latitude,
+                                    longitude: item.longitude
+                                };
+                            }));
+                        }
+                    });
+                },
+                minLength: 2,
+                select: function(event, ui) {
+                    $("#id_latitude").val(ui.item.latitude);
+                    $("#id_longitude").val(ui.item.longitude);
+                }
+            });
         });
-    });
-</script>
-
+    </script>
 </body>
 </html>
-
-
