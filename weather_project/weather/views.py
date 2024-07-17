@@ -7,8 +7,7 @@ from .constants import WEATHER_CODE_DESCRIPTIONS
 from .forms import CityForm
 from .models import CitySearchHistory
 
-GEOAPIFY_API_KEY = 'df8ff8b5c28843ed9e152fd0e7e2e597'  # Замените на ваш
-# ключ API Geoapify
+GEOAPIFY_API_KEY = 'df8ff8b5c28843ed9e152fd0e7e2e597'
 
 
 def get_weather(latitude, longitude):
@@ -25,18 +24,18 @@ def get_weather(latitude, longitude):
 
     # Добавление описания погоды к данным
     data['current_weather']['description'] = weather_description
-    data['current_weather']['latitude'] = latitude
-    data['current_weather']['longitude'] = longitude
     return data
 
 
 def get_city_coordinates(city_name):
+    """Получение координат по названию города."""
     geolocator = Nominatim(user_agent="weather_app")
     location = geolocator.geocode(city_name)
     return location.latitude, location.longitude
 
 
 def get_city_by_coordinates(latitude, longitude):
+    """Получение названия город по координатам."""
     coordinates = str(latitude) + ', ' + str(longitude)
     geolocator = Nominatim(user_agent="weather_app")
     city = geolocator.reverse(coordinates, zoom=10, language="ru")
