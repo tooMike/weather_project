@@ -59,6 +59,12 @@ docker compose exec backend python manage.py collectstatic
 docker compose exec backend python manage.py migrate
 ```
 
+Запустить тесты в контейнере backend:
+
+```
+docker compose exec backend pytest
+```
+
 Проект будет доступен по адресу
 
 ```
