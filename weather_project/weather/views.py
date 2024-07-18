@@ -1,7 +1,10 @@
+import os
+
 import requests
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import render
+from dotenv import load_dotenv
 from geopy.geocoders import Nominatim
 
 from .constants import WEATHER_CODE_DESCRIPTIONS
@@ -10,7 +13,9 @@ from .forms import CityForm
 from .models import CitySearchHistory
 from .utils import get_history
 
-GEOAPIFY_API_KEY = 'df8ff8b5c28843ed9e152fd0e7e2e597'
+load_dotenv()
+
+GEOAPIFY_API_KEY = os.getenv('GEOAPIFY_API_KEY')
 
 
 def get_weather(latitude, longitude):
@@ -25,35 +30,35 @@ def get_weather(latitude, longitude):
         weather_code = data['current_weather']['weathercode']
         weather_description = WEATHER_CODE_DESCRIPTIONS.get(
             weather_code,
-            "Unknown"
+            'Unknown'
         )
         # Добавление описания погоды к данным
         data['current_weather']['description'] = weather_description
         return data
     except requests.RequestException:
-        raise WeatherServiceError("Ошибка при получении информации о погоде")
+        raise WeatherServiceError('Ошибка при получении информации о погоде')
 
 
 def get_city_coordinates(city_name):
     """Получение координат по названию города."""
     try:
-        geolocator = Nominatim(user_agent="weather_app")
+        geolocator = Nominatim(user_agent='weather_app')
         location = geolocator.geocode(city_name, timeout=10)
         return location.latitude, location.longitude
     except Exception:
-        raise CityNotFoundError(f"Не удалось найти город: {city_name}")
+        raise CityNotFoundError(f'Не удалось найти город: {city_name}')
 
 
 def get_city_by_coordinates(latitude, longitude):
     """Получение названия города и страны по координатам."""
     try:
         coordinates = str(latitude) + ', ' + str(longitude)
-        geolocator = Nominatim(user_agent="weather_app")
+        geolocator = Nominatim(user_agent='weather_app')
         # В параметрах указываем уровень детализации (до города) и язык
-        city = geolocator.reverse(coordinates, zoom=10, language="ru")
+        city = geolocator.reverse(coordinates, zoom=10, language='ru')
         return city
     except Exception:
-        raise CityNotFoundError("Не удалось найти город")
+        raise CityNotFoundError('Не удалось найти город')
 
 
 def city_autocomplete(request):
@@ -69,9 +74,9 @@ def city_autocomplete(request):
             unique_cities = []
 
             for feature in data['features']:
-                properties = feature["properties"]
-                city = properties.get("city")
-                country = properties.get("country")
+                properties = feature['properties']
+                city = properties.get('city')
+                country = properties.get('country')
                 if city and country:
                     city_country = (city, country)
                     if city_country not in seen:
@@ -80,8 +85,8 @@ def city_autocomplete(request):
                             {
                                 'city_name': city,
                                 'country': country,
-                                'latitude': properties["lat"],
-                                'longitude': properties["lon"]
+                                'latitude': properties['lat'],
+                                'longitude': properties['lon']
                             }
                         )
             return JsonResponse(unique_cities, safe=False)
@@ -143,7 +148,7 @@ def index(request):
             except WeatherServiceError as e:
                 messages.error(request, str(e))
             except Exception as e:
-                messages.error(request, f"Неизвестная ошибка: {e}")
+                messages.error(request, f'Неизвестная ошибка: {e}')
 
     else:
         form = CityForm()

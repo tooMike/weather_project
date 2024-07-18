@@ -15,7 +15,7 @@ class CitiesRequestNumber(ListViewSet):
     filter_backends = (
         filters.SearchFilter,
     )
-    search_fields = ("city_name",)
+    search_fields = ('city_name',)
     pagination_class = LimitOffsetPagination
     permission_classes = (AllowAny,)
 
