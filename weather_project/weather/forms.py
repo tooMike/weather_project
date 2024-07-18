@@ -10,7 +10,7 @@ class CityForm(forms.Form):
     city_name = forms.CharField(
         label='Город:',
         min_length=3,
-        max_length=30,
+        max_length=100,
         widget=forms.TextInput()
     )
     latitude = forms.FloatField(widget=forms.HiddenInput(), required=False)
@@ -21,10 +21,10 @@ class CityForm(forms.Form):
         city_name = self.cleaned_data.get('city_name')
 
         # Проверяем, что все символы – буквы, пробелы или -
-        if not re.match(r'^[a-zA-Zа-яА-Я\s\-]+$', city_name):
+        if not re.match(r'^[a-zA-Zа-яА-Я\s\-,ё]+$', city_name):
             raise ValidationError(
-                'Название города должно состоять только из букв, пробелов и '
-                'дефисов.'
+                'Название города может состоять только из букв, пробелов, '
+                'дефисов и запятых.'
             )
 
         return city_name

@@ -8,13 +8,13 @@ class CitySearchHistory(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name="Пользователь"
+        verbose_name="Пользователь",
+        null=True,
+        blank=True
     )
     # Добавляем поле session_key для неавторизованных пользователей
     session_key = models.CharField(
         max_length=32,
-        null=True,
-        blank=True,
         verbose_name="Ключ сессии"
     )
     city_name = models.CharField(max_length=100, verbose_name="Город")
@@ -26,3 +26,7 @@ class CitySearchHistory(models.Model):
         auto_now=True,
         verbose_name="Время последнего запроса"
     )
+
+    class Meta:
+        default_related_name = "citysearchhistory"
+        ordering = ("-last_searched",)

@@ -1,6 +1,6 @@
 import requests
-from django.http import JsonResponse
 from django.contrib import messages
+from django.http import JsonResponse
 from django.shortcuts import render
 from geopy.geocoders import Nominatim
 
@@ -8,6 +8,7 @@ from .constants import WEATHER_CODE_DESCRIPTIONS
 from .exceptions import CityNotFoundError, WeatherServiceError
 from .forms import CityForm
 from .models import CitySearchHistory
+from .utils import get_history
 
 GEOAPIFY_API_KEY = 'df8ff8b5c28843ed9e152fd0e7e2e597'
 
@@ -90,6 +91,12 @@ def city_autocomplete(request):
 
 
 def index(request):
+    # Добавляем сессионный ключ, если его нет
+    if not request.session.session_key:
+        request.session.create()
+
+    context = {}
+
     if request.method == 'POST':
         form = CityForm(request.POST)
         if form.is_valid():
@@ -116,17 +123,23 @@ def index(request):
                 if request.user.is_authenticated:
                     history, created = CitySearchHistory.objects.get_or_create(
                         user=request.user,
-                        city_name=city_name
+                        city_name=weather_data['city_name'],
+                        session_key=request.session.session_key
+                    )
+                    if not created:
+                        history.search_count += 1
+                    history.save()
+                else:
+                    history, created = CitySearchHistory.objects.get_or_create(
+                        session_key=request.session.session_key,
+                        city_name=weather_data['city_name']
                     )
                     if not created:
                         history.search_count += 1
                     history.save()
 
-                return render(
-                    request,
-                    'weather/index.html',
-                    {'form': form, 'weather_data': weather_data}
-                )
+                context['weather_data'] = weather_data
+
             except CityNotFoundError as e:
                 messages.error(request, str(e))
             except WeatherServiceError as e:
@@ -137,4 +150,9 @@ def index(request):
     else:
         form = CityForm()
 
-    return render(request, 'weather/index.html', {'form': form})
+    context['form'] = form
+    # Если есть история запросов, до добавляем ее в контекст
+    if history := get_history(request):
+        context['history'] = history
+
+    return render(request, 'weather/index.html', context=context)

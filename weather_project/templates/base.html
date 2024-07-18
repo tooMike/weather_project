@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather App</title>
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+{% include "includes/header.html" %}
+
+<div class="container flex-grow-1">
+    {% block content %}
+    {% endblock %}
+</div>
+
+{% include "includes/footer.html" %}
+
+</body>
+
+</html>

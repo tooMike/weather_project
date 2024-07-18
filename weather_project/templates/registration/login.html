@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="card col-4 m-3">
+      <div class="card-body">
+          <h2>Войдите в свой аккаунт</h2>
+    
+        <!-- В атрибуте action указываем адрес, куда должен отправляться запрос. -->
+        <form method="post" action="{% url 'login' %}">
+          {% csrf_token %}
+          {% bootstrap_form form %}
+          <!-- В скрытом поле передаём параметр next, 
+            это URL для переадресации после логина. -->
+          <input type="hidden" name="next" value="{{ next }}">
+          {% bootstrap_button button_type="submit" content="Войти" %}
+        </form>
+        <div>
+          <!-- Ссылка для перехода на страницу восстановления пароля. -->
+          <a href="{% url 'registration' %}">Зарегистрироваться</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
