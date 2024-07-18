@@ -31,7 +31,7 @@ def get_weather(latitude, longitude):
         data['current_weather']['description'] = weather_description
         return data
     except requests.RequestException:
-        raise WeatherServiceError(f"Ошибка при получении информации о погоде")
+        raise WeatherServiceError("Ошибка при получении информации о погоде")
 
 
 def get_city_coordinates(city_name):
@@ -53,7 +53,7 @@ def get_city_by_coordinates(latitude, longitude):
         city = geolocator.reverse(coordinates, zoom=10, language="ru")
         return city
     except Exception:
-        raise CityNotFoundError(f"Не удалось найти город")
+        raise CityNotFoundError("Не удалось найти город")
 
 
 def city_autocomplete(request):
@@ -91,10 +91,6 @@ def city_autocomplete(request):
 
 
 def index(request):
-    # Добавляем сессионный ключ, если его нет
-    if not request.session.session_key:
-        request.session.create()
-
     context = {}
 
     if request.method == 'POST':
@@ -124,12 +120,14 @@ def index(request):
                     history, created = CitySearchHistory.objects.get_or_create(
                         user=request.user,
                         city_name=weather_data['city_name'],
-                        session_key=request.session.session_key
                     )
                     if not created:
                         history.search_count += 1
                     history.save()
                 else:
+                    # Добавляем сессионный ключ, если его нет
+                    if not request.session.session_key:
+                        request.session.create()
                     history, created = CitySearchHistory.objects.get_or_create(
                         session_key=request.session.session_key,
                         city_name=weather_data['city_name']

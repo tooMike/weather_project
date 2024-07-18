@@ -1,30 +1,30 @@
 <header>
-  <nav class="navbar shadow-sm">
-    <div class="container">
-        <ul class="nav nav-pills">
-          <li class="nav-item">
-            <a class="nav-link"
-              href="{% url 'main:index' %}">
-              Главная
-            </a>
-          </li>
+    <nav class="navbar shadow-sm">
+        <div class="container">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="{% url 'main:index' %}">
+                        Главная
+                    </a>
+                </li>
 
 
-          <!-- Это блок ссылок для авторизованного пользователя -->
-          {% if user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
-            </li>
-          <!-- Конец блока ссылок для авторизованного пользователя -->
+                <!-- Это блок ссылок для авторизованного пользователя -->
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+                </li>
+                <!-- Конец блока ссылок для авторизованного пользователя -->
 
-          <!-- А здесь блок ссылок для неавторизованного пользователя -->
-          {% else %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'login' %}">Войти</a>
-            </li>
-          {% endif %}
-          <!-- Конец блока ссылок для неавторизованного пользователя -->
-        </ul>
-    </div>
-  </nav>
+                <!-- А здесь блок ссылок для неавторизованного пользователя -->
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Войти</a>
+                </li>
+                {% endif %}
+                <!-- Конец блока ссылок для неавторизованного пользователя -->
+            </ul>
+        </div>
+    </nav>
 </header>

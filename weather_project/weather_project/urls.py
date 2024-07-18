@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.contrib.auth.views import LoginView
 from django.urls import include, path, reverse_lazy
 
 from users.forms import CustomUserCreationForm

@@ -19,7 +19,7 @@ class CitySearchHistory(models.Model):
     )
     city_name = models.CharField(max_length=100, verbose_name="Город")
     search_count = models.IntegerField(
-        default=0,
+        default=1,
         verbose_name="Число запросов"
     )
     last_searched = models.DateTimeField(

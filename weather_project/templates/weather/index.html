@@ -7,8 +7,10 @@
         <h1 class="mb-4">Узнай погоду в своем городе</h1>
         <form method="post" class="mb-4">
             {% csrf_token %}
-            {% bootstrap_form form %}
-            <button type="submit" class="btn btn-primary">Узнать погоду</button>
+            <input id="id_city_name" type="text" name="city_name" data-autocomplete-url="{% url 'main:city_autocomplete' %}" class="form-control" placeholder="Введите название города">
+            <input id="id_latitude" type="hidden" name="latitude">
+            <input id="id_longitude" type="hidden" name="longitude">
+            <button type="submit" class="btn btn-primary mt-3">Узнать погоду</button>
         </form>
 
         {% if messages %}
@@ -55,4 +57,5 @@
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/scripts.js' %}"></script>
+
 {% endblock content %}
