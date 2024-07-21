@@ -34,7 +34,7 @@ Web приложения для получения прогноза погоды
 Клонировать репозиторий и перейти в него в командной строке:
 
 ```
-https://github.com/tooMike/weather_project
+git clone https://github.com/tooMike/weather_project
 ```
 
 ```
